@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+      const supabaseUrl = 'https://jjsmdmpqltsycuwozlqb.supabase.co'
+      const supabaseKey = process.env.SUPABASE_KEY
+      const supabase = createClient(supabaseUrl, supabaseKey)
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Store - Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #2c2520;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1e25;
+            border-radius: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-right: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #aaa;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: white;
+        }
+
+        nav ul li a.active {
+            color: #e67e22;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .wishlist {
+            margin-right: 20px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .profile {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #aaa;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .profile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .main-content {
+            margin-bottom: 30px;
+        }
+
+        .collection-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .collection-header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            color: #e67e22;
+        }
+
+        .collection-header p {
+            color: #aaa;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #24292e;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .filter-label {
+            margin-right: 10px;
+            color: #aaa;
+        }
+
+        .filter-select {
+            padding: 8px 15px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .search-bar input {
+            padding: 8px 15px;
+            width: 250px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .game-card {
+            background-color: #1a1e25;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-image {
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .game-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .game-info {
+            padding: 15px;
+        }
+
+        .game-title {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .game-platform {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .game-category {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .game-purchase {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e67e22;
+        }
+
+        .Download-button {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .Download-button:hover {
+            background-color: #d35400;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .page-button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .page-button.active {
+            background-color: #e67e22;
+        }
+
+        .page-button:hover:not(.active) {
+            background-color: #444;
+        }
+
+        footer {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+        }
+
+        .social-media {
+            display: flex;
+            gap: 20px;
+        }
+        .auth-button {
+  background-color: #e67e22;
+  color: white;
+  padding: 6px 12px;
+  font-size: 14px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.auth-button:hover {
+  background-color: #d35400;
+}
+
+
+        .social-icon {
+            color: #aaa;
+            font-size: 20px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .social-icon:hover {
+            color: white;
+        }
+
+        @media (max-width: 992px) {
+            .games-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .games-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">GameHub</div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="collection.html" class="active">Game Collection</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </nav>
+            <div class="user-actions">
+                <a href="login.html" class="auth-button login-btn" style="margin-right: 10px;">Login</a>
+                <a href="signup.html" class="auth-button signup-btn" style="margin-right: 20px;">Sign Up</a>
+                <button class="auth-button logout-btn" style="margin-right: 20px; display: none;">Logout</button>
+                <div class="profile">
+                  <img id="profile-img" src="/api/placeholder/40/40" alt="User Profile">
+                </div>
+              </div>
+              
+              
+        </header>
+        <div class="main-content">
+            <div class="collection-header">
+                <h1>Our Game Collection</h1>
+                <p>Discover and explore our extensive library of games across multiple platforms and genres.</p>
+            </div>
+
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <span class="filter-label">Platform:</span>
+                    <select class="filter-select">
+                        <option value="all">All Platforms</option>
+                        <option value="ps5">PlayStation 5</option>
+                        <option value="ps4">PlayStation 4</option>
+                        <option value="xbox">Xbox Series</option>
+                        <option value="switch">Nintendo Switch</option>
+                        <option value="pc">PC</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Category:</span>
+                    <select class="filter-select">
+                        <option value="all">All Categories</option>
+                        <option value="adventure">Adventure</option>
+                        <option value="action">Action</option>
+                        <option value="rpg">RPG</option>
+                        <option value="strategy">Strategy</option>
+                        <option value="sports">Sports</option>
+                        <option value="simulation">Simulation</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Sort By:</span>
+                    <select class="filter-select">
+                        <option value="popular">Popularity</option>
+                        <option value="newest">Newest</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Rating</option>
+                    </select>
+                </div>
+                <div class="search-bar">
+                    <input type="text" placeholder="Search games...">
+                </div>
+            </div>
+
+            <div class="games-grid">
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/forza-horizon-5-button-fin-1629830068379.webp" alt="Forza Horizon 5">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Forza Horizon 5</h3>
+                        <p class="game-platform">PC</p>
+                        <p class="game-platform">Repack Size: from 73.5 GB</p>
+                        <div class="game-purchase">
+                            <a href="files/Forza Horizon 5 [FreePcGames1].torrent" download>
+                            <button class="Download-button">Download</button></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/MarvelsSpider-Man.jpeg" alt="Marvel's Spider-Man">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Marvel's Spider-Man</h3>
+                        <p class="game-platform">Pc</p>
+                        <p class="game-platform">Repack Size: from 37.6 GB</p>
+                        <div class="game-purchase">
+                            <a href="files/Spider-man Remastered [FreePcGames1].torrent" download>
+                            <button class="Download-button">Download</button></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/gta-5-button-2021-1639777058682.webp" alt="GTA V">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">GTA V</h3>
+                        <p class="game-platform">Pc</p>
+                        <p class="game-platform">Repack Size: from 51.1 GB </p>
+                        <div class="game-purchase">
+                            <a href="files/Grand Theft Auto V [FreePcGames1].torrent" download>
+                            <button class="Download-button">Download</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/ghost-of-tsushima_2737.300.webp" alt="Ghost of Tsushima">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Ghost of Tsushima</h3>
+                        <p class="game-platform">PC</p>
+                        <p class="game-platform">Repack Size: from 31.2 GB</p>
+                        <div class="game-purchase">
+                            <a href="files/Ghost of Tsushima DC .torrent" download>
+                            <button class="Download-button">Download</button></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/god-of-war-ragnarok-button-1631231879154.webp" alt="God of War Ragnarok">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">God of War Ragnarok</h3>
+                        <p class="game-platform">PC</p>
+                        <p class="game-platform">Repack Size: from 65.1 GB</p>
+                        <div class="game-purchase">
+                            <a href="files/God of War Ragnarok [FreePcGames1].torrent" download>
+                            <button class="Download-button">Download</button></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/the-last-of-us-part-1-button-1654791855870.webp" alt="The Last of Us Part I">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">The Last of Us Part I</h3>
+                        <p class="game-platform">PC</p>
+                        <p class="game-platform">Repack Size: from 38.8 GB </p>
+                        <div class="game-purchase">
+                            <a href="files/The Last of Us - Part I [FreePcGames].torrent" download>
+                            <button class="Download-button">Download</button></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/Red-Dead-Redemption-2.webp" alt="Red Dead Redemption 2">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Red Dead Redemption 2</h3>
+                        <p class="game-platform">PC</p>
+                        <p class="game-platform">Repack Size: 68.8 GB</p>
+                        <div class="game-purchase">
+                            <a href="files/Red Dead Redemption 2 [FreePcGames1].torrent"download>
+                            <button class="Download-button">Download</button></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/the-last-of-us-part-ii-remastered_yxz3.300.webp" alt="The Last of Us: Part II">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">The Last of Us: Part II</h3>
+                        <p class="game-platform">PC</p>
+                        <p class="game-platform">Repack Size: from 48.6 GB</p>
+                        <div class="game-purchase">
+                            <a href="files/The Last of Us - Part II Remastered [FreePcGames1].torrent"download>   
+                            <button class="Download-button">Download</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/coming-soon-300x300.jpg" alt="Coming Soon">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Coming Soon</h3>
+                        <p class="game-platform">Need Games</p>
+                        <p class="game-platform">Request In Contact us</p>
+                        <div class="game-purchase">
+                            <a href="#"download>
+                            <button class="Download-button">Coming Soon</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/coming-soon-300x300.jpg" alt="Coming Soon">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Coming Soon</h3>
+                        <p class="game-platform">Need Games</p>
+                        <p class="game-platform">Request In Contact us</p>
+                        <div class="game-purchase">
+                            <a href="#"download>
+                            <button class="Download-button">Coming Soon</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/coming-soon-300x300.jpg" alt="Coming Soon">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Coming Soon</h3>
+                        <p class="game-platform">Need Games</p>
+                        <p class="game-platform">Request In Contact us</p>
+                        <div class="game-purchase">
+                            <a href="#"download>
+                            <button class="Download-button">Coming Soon</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/coming-soon-300x300.jpg" alt="Coming Soon">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Coming Soon</h3>
+                        <p class="game-platform">Need Games</p>
+                        <p class="game-platform">Request In Contact us</p>
+                        <div class="game-purchase">
+                            <a href="#"download>
+                            <button class="Download-button">Coming Soon</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/coming-soon-300x300.jpg" alt="Coming Soon">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Coming Soon</h3>
+                        <p class="game-platform">Need Games</p>
+                        <p class="game-platform">Request In Contact us</p>
+                        <div class="game-purchase">
+                            <a href="#"download>
+                            <button class="Download-button">Coming Soon</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/coming-soon-300x300.jpg" alt="Coming Soon">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Coming Soon</h3>
+                        <p class="game-platform">Need Games</p>
+                        <p class="game-platform">Request In Contact us</p>
+                        <div class="game-purchase">
+                            <a href="#"download>
+                            <button class="Download-button">Coming Soon</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/coming-soon-300x300.jpg" alt="Coming Soon">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Coming Soon</h3>
+                        <p class="game-platform">Need Games</p>
+                        <p class="game-platform">Request In Contact us</p>
+                        <div class="game-purchase">
+                            <a href="#"download>
+                            <button class="Download-button">Coming Soon</button></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <div class="game-image">
+                        <img src="images/coming-soon-300x300.jpg" alt="Coming Soon">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">Coming Soon</h3>
+                        <p class="game-platform">Need Games</p>
+                        <p class="game-platform">Request In Contact us</p>
+                        <div class="game-purchase">
+                            <a href="#"download>
+                            <button class="Download-button">Coming Soon</button></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="social-media">
+                <div class="social-icon">𝕏</div>
+                <div class="social-icon">📷</div>
+                <div class="social-icon">▶️</div>
+                <div class="social-icon">f</div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const searchInput = document.querySelector(".search-bar input");
+          const gameCards = document.querySelectorAll(".game-card");
+      
+          searchInput.addEventListener("input", () => {
+            const query = searchInput.value.toLowerCase();
+            gameCards.forEach(card => {
+              const title = card.querySelector(".game-title").textContent.toLowerCase();
+              card.style.display = title.includes(query) ? "block" : "none";
+            });
+          });
+        });
+      </script>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+          const downloadButtons = document.querySelectorAll(".Download-button");
+      
+          downloadButtons.forEach(button => {
+            button.addEventListener("click", (e) => {
+              if (!isLoggedIn) {
+                e.preventDefault();
+                alert("🚫 You must be logged in to download games.");
+              }
+            });
+          });
+        });
+      </script>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+          
+          const loginBtn = document.querySelector(".login-btn");
+          const signupBtn = document.querySelector(".signup-btn");
+      
+          if (isLoggedIn) {
+            if (loginBtn) loginBtn.style.display = "none";
+            if (signupBtn) signupBtn.style.display = "none";
+          }
+        });
+      </script>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const profileImg = document.getElementById("profile-img");
+          const savedPic = localStorage.getItem("profilePic");
+      
+          if (savedPic && profileImg) {
+            profileImg.src = savedPic;
+          }
+        });
+      </script>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+          const loginBtn = document.querySelector(".login-btn");
+          const signupBtn = document.querySelector(".signup-btn");
+          const logoutBtn = document.querySelector(".logout-btn");
+          const profileImg = document.getElementById("profile-img");
+          const savedPic = localStorage.getItem("profilePic");
+      
+          if (isLoggedIn) {
+            if (loginBtn) loginBtn.style.display = "none";
+            if (signupBtn) signupBtn.style.display = "none";
+            if (logoutBtn) logoutBtn.style.display = "inline-block";
+          }
+      
+          if (savedPic && profileImg) {
+            profileImg.src = savedPic;
+          }
+      
+          if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => {
+              localStorage.setItem("loggedIn", "false");
+              window.location.reload();
+            });
+          }
+        });
+      </script>
+      
+      
+      
+</body>

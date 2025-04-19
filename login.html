@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login - GameHub</title>
+  <style>
+    body {
+      background: #1a1e25;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .form-box {
+      background: #2c2520;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000;
+      width: 300px;
+    }
+    input, button {
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+    }
+    input {
+      background: #333;
+      color: white;
+    }
+    button {
+      background: #e67e22;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-box">
+    <h2>Login</h2>
+    <input type="email" id="login-email" placeholder="Email" />
+    <input type="password" id="login-password" placeholder="Password" />
+    <button id="login-btn">Login</button>
+    <p id="status-msg"></p>
+    <p>Don't have an account? <a href="signup.html" style="color:#e67e22;">Sign up</a></p>
+  </div>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.0/dist/umd/supabase.min.js"></script>
+  <script>
+    const supabaseClient = window.supabase.createClient(
+      'https://jjsmdmpqltsycuwozlqb.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqc21kbXBxbHRzeWN1d296bHFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3OTczNTgsImV4cCI6MjA2MDM3MzM1OH0.mfwtUZP-PNnAFi-RUDTzo666pKSvBeQP6RjppUkyUe0'
+    );
+
+    document.getElementById("login-btn").addEventListener("click", async () => {
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+      document.getElementById("status-msg").innerText = "⏳ Logging in...";
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        document.getElementById("status-msg").innerText = "❌ " + error.message;
+      } else {
+        document.getElementById("status-msg").innerText = "✅ Logged in!";
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("userEmail", email);
+        setTimeout(() => {
+          window.location.href = "index.html"; // Or your homepage/dashboard
+        }, 1000);
+      }
+    });
+  </script>
+</body>
+</html>
