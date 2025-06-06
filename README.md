@@ -55,7 +55,7 @@ Welcome to **GameHub**, a free PC game sharing platform that offers high-quality
 
 1. Clone or download the project:
 ```bash
-git clone https://github.com/yourusername/GameHub.git
+git clone https://github.com/Guhan-224/Gamehub
 ```
 
 2. Open `index.html` in your browser.
